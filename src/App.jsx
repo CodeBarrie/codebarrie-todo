@@ -999,7 +999,7 @@ function TaskItem({ task, sectionId, onToggle, onDelete, onEdit, onSetTimer, onC
 
     const maxAngle = 18;
     const rawRy = (dx / maxDist) * maxAngle * strength;
-    const rawRx = -(dy / maxDist) * maxAngle * strength;
+    const rawRx = (dy / maxDist) * maxAngle * strength;
 
     const cap = 35;
     const ry = axisLock ? 0 : Math.max(-cap, Math.min(cap, rawRy));
