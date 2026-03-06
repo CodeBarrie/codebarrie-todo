@@ -23,7 +23,7 @@ function formatDate(ts) {
 }
 
 // Custom title bar — matches theme, draggable
-function TitleBar({ theme, parallaxIntensity, onParallaxChange, pivotMode, onPivotChange, axisLock, onAxisLockChange }) {
+function TitleBar({ theme, parallaxIntensity, onParallaxChange, pivotMode, onPivotChange, axisLock, onAxisLockChange, invertAxis, onInvertChange }) {
   const t = theme || THEMES.laserburn;
   const [maximized, setMaximized] = useState(false);
 
@@ -184,6 +184,31 @@ function TitleBar({ theme, parallaxIntensity, onParallaxChange, pivotMode, onPiv
             fontWeight: axisLock ? 700 : 400,
             transition: "all 0.15s",
           }}>Y-Lock</span>
+        </div>
+
+        <div
+          onClick={() => onInvertChange(!invertAxis)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            cursor: "pointer",
+            padding: "2px 6px",
+            borderRadius: 4,
+            marginLeft: 4,
+            background: invertAxis ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)",
+            transition: "background 0.15s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = invertAxis ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.12)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = invertAxis ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)")}
+        >
+          <span style={{
+            fontSize: 9,
+            color: invertAxis ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.35)",
+            fontFamily: "'JetBrains Mono', monospace",
+            fontWeight: invertAxis ? 700 : 400,
+            transition: "all 0.15s",
+          }}>Invert</span>
         </div>
       </div>
 
@@ -924,7 +949,7 @@ function TimerPresets({ onSelect, onClose, theme }) {
 }
 
 // Individual task item — each one independently tracks the mouse + optional timer
-function TaskItem({ task, sectionId, onToggle, onDelete, onEdit, onSetTimer, onCancelTimer, onTimerComplete, theme, mousePos, pScale, pivotMode, axisLock, isDragging, onPointerDownDrag }) {
+function TaskItem({ task, sectionId, onToggle, onDelete, onEdit, onSetTimer, onCancelTimer, onTimerComplete, theme, mousePos, pScale, pivotMode, axisLock, invertAxis, isDragging, onPointerDownDrag }) {
   const t = theme || THEMES.laserburn;
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
@@ -998,8 +1023,9 @@ function TaskItem({ task, sectionId, onToggle, onDelete, onEdit, onSetTimer, onC
     const strength = influence * pScale;
 
     const maxAngle = 18;
-    const rawRy = (dx / maxDist) * maxAngle * strength;
-    const rawRx = (dy / maxDist) * maxAngle * strength;
+    const inv = invertAxis ? -1 : 1;
+    const rawRy = inv * -(dx / maxDist) * maxAngle * strength;
+    const rawRx = inv * (dy / maxDist) * maxAngle * strength;
 
     const cap = 35;
     const ry = axisLock ? 0 : Math.max(-cap, Math.min(cap, rawRy));
@@ -1278,7 +1304,7 @@ function TaskItem({ task, sectionId, onToggle, onDelete, onEdit, onSetTimer, onC
 }
 
 // Section component — with reorder buttons + animation
-function Section({ section, sectionIndex, totalSections, onToggleTask, onDeleteTask, onEditTask, onDeleteSection, onAddTask, onSetTimer, onCancelTimer, onTimerComplete, onMoveUp, onMoveDown, theme, mousePos, pScale, pivotMode, axisLock, dragTask, dragOverTask, onPointerDownDrag, landedTaskId, collapsingSlot }) {
+function Section({ section, sectionIndex, totalSections, onToggleTask, onDeleteTask, onEditTask, onDeleteSection, onAddTask, onSetTimer, onCancelTimer, onTimerComplete, onMoveUp, onMoveDown, theme, mousePos, pScale, pivotMode, axisLock, invertAxis, dragTask, dragOverTask, onPointerDownDrag, landedTaskId, collapsingSlot }) {
   const t = theme || THEMES.laserburn;
   const [newTask, setNewTask] = useState("");
   const [collapsed, setCollapsed] = useState(false);
@@ -1518,6 +1544,7 @@ function Section({ section, sectionIndex, totalSections, onToggleTask, onDeleteT
                       pScale={pScale}
                       pivotMode={pivotMode}
                       axisLock={axisLock}
+                      invertAxis={invertAxis}
                       isDragging={isBeingDragged}
                       onPointerDownDrag={onPointerDownDrag}
                     />
@@ -1699,6 +1726,7 @@ export default function App() {
   const [parallaxIntensity, setParallaxIntensity] = useState(600);
   const [pivotMode, setPivotMode] = useState("center");
   const [axisLock, setAxisLock] = useState(false);
+  const [invertAxis, setInvertAxis] = useState(false);
   const theme = THEMES[themeKey] || THEMES.laserburn;
   const pScale = parallaxIntensity / 200;
 
@@ -2531,7 +2559,7 @@ export default function App() {
         rel="stylesheet"
       />
 
-      <TitleBar theme={theme} parallaxIntensity={parallaxIntensity} onParallaxChange={setParallaxIntensity} pivotMode={pivotMode} onPivotChange={setPivotMode} axisLock={axisLock} onAxisLockChange={setAxisLock} />
+      <TitleBar theme={theme} parallaxIntensity={parallaxIntensity} onParallaxChange={setParallaxIntensity} pivotMode={pivotMode} onPivotChange={setPivotMode} axisLock={axisLock} onAxisLockChange={setAxisLock} invertAxis={invertAxis} onInvertChange={setInvertAxis} />
       <Confetti trigger={confetti.trigger} intensity={confetti.intensity} burstRect={confetti.burstRect || null} />
       <Toast message={toast.message} visible={toast.visible} type={toast.type} theme={theme} />
 
@@ -2929,6 +2957,7 @@ export default function App() {
                 pScale={pScale}
                 pivotMode={pivotMode}
                 axisLock={axisLock}
+                invertAxis={invertAxis}
                 dragTask={dragTask}
                 dragOverTask={dragOverTask}
                 onPointerDownDrag={handlePointerDownDrag}
