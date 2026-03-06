@@ -26,6 +26,7 @@ function formatDate(ts) {
 function TitleBar({ theme, parallaxIntensity, onParallaxChange, pivotMode, onPivotChange, axisLock, onAxisLockChange, invertAxis, onInvertChange }) {
   const t = theme || THEMES.laserburn;
   const [maximized, setMaximized] = useState(false);
+  const [pinned, setPinned] = useState(false);
 
   useEffect(() => {
     appWindow.isMaximized().then(setMaximized);
@@ -213,6 +214,30 @@ function TitleBar({ theme, parallaxIntensity, onParallaxChange, pivotMode, onPiv
       </div>
 
       <div style={{ display: "flex" }}>
+        <button
+          style={{
+            ...btnStyle,
+            fontSize: 13,
+            background: pinned ? "rgba(255,200,0,0.25)" : "none",
+            boxShadow: pinned ? "inset 0 0 8px rgba(255,200,0,0.3)" : "none",
+            borderBottom: pinned ? "2px solid #FFD700" : "2px solid transparent",
+            transition: "all 0.2s",
+          }}
+          title={pinned ? "Unpin from top" : "Pin on top"}
+          onClick={async () => {
+            try {
+              const next = !pinned;
+              await appWindow.setAlwaysOnTop(next);
+              setPinned(next);
+            } catch (err) {
+              console.error("setAlwaysOnTop failed:", err);
+            }
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = pinned ? "rgba(255,200,0,0.35)" : "rgba(255,255,255,0.1)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = pinned ? "rgba(255,200,0,0.25)" : "none")}
+        >
+          <span style={{ pointerEvents: "none", filter: pinned ? "brightness(1.2)" : "brightness(0.6)" }}>📌</span>
+        </button>
         <button
           style={btnStyle}
           onClick={() => appWindow.minimize()}
