@@ -11,6 +11,7 @@ Built with [Tauri](https://tauri.app/) + React. Runs on Windows, macOS, and Linu
 - **Task drag-and-drop with soul pull** — Drag a task and its ghost floats out while neighboring tasks ripple away from the drop point on impact.
 - **3D parallax** — Every card tilts and shifts based on your mouse position. Adjustable intensity, pivot point, and axis lock from the title bar.
 - **Countdown timers** — Set a timer on any task (5m, 15m, 25m, 60m, or custom). A depleting bar shows time remaining with auto-inverting text color.
+- **Always-on-top pin** — One-click pin button in the title bar to float the app above everything else while you work.
 - **Sessions** — Multiple independent projects. Switch between them, rename them, delete them.
 - **Confetti & celebrations** — Task completion toasts, section-clear bursts, and a full-screen confetti mega-celebration when you finish everything.
 
