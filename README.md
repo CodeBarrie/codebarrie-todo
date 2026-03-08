@@ -4,6 +4,8 @@ A desktop to-do list app that makes checking things off feel *really* good.
 
 Built with [Tauri](https://tauri.app/) + React. Runs on Windows, macOS, and Linux.
 
+![CodeBarrie: To-Do](UI-Sample.png)
+
 ## What Makes It Different
 
 - **Musical check-offs** — Each task plays a note from an ascending pentatonic scale. The further you get, the higher the pitch. Complete everything and a Final Fantasy-style victory fanfare plays.
